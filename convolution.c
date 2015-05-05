@@ -14,8 +14,8 @@
 #define HALF_FILTER_WIDTH 3
 
 // local size of work group
-#define WGX 16
-#define WGY 16
+#define WGX 16 
+#define WGY 16 
 
 
 void print_kernel_info(cl_command_queue queue, cl_kernel knl)
@@ -261,6 +261,7 @@ int main(int argc, char *argv[])
   {
     CALL_CL_SAFE(clEnqueueNDRangeKernel(queue, knl, 2, NULL,
           global_size, local_size, 0, NULL, NULL));
+    CALL_CL_SAFE(clEnqueueCopyBuffer(queue, buf_congray, buf_gray, 0, 0, deviceDataSize, 0, NULL, NULL));
   }
   CALL_CL_SAFE(clFinish(queue));
   get_timestamp(&toc);

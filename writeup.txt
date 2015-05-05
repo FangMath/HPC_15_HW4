@@ -1,0 +1,88 @@
+* Part a.
+1) Test on different GPUs 
+
+a) on cims open1c:
+    Run ./convolution bike.ppm 100 on open1c, using AMD cypress device we got
+    speed of
+    **********
+    0.001047 s
+    237.756769 MPixels/s
+    1.902054 GBit/s
+    11.508922 GFlop/s
+    **********
+
+    Run ./convolution peom.ppm 100 on the same device we have (my photo which is
+    larger than bike.ppm)
+    **********
+    0.002652 s
+    296.507418 MPixels/s
+    2.372059 GBit/s
+    14.429711 GFlop/s
+    **********
+
+b) on cims cuda1:
+    Run ./convolution bike.ppm 100 on cuda1, using AMD cypress device we got
+    speed of
+    **********
+    0.000326 s
+    763.320047 MPixels/s
+    6.106560 GBit/s
+    36.949489 GFlop/s
+    **********
+    
+    Run ./convolution peom.ppm 100 on the same device
+    **********
+    0.000974 s
+    807.391264 MPixels/s
+    6.459130 GBit/s
+    39.292180 GFlop/s
+    **********
+We see that cuda1 is much awesome than open1c!!!
+
+
+2) Test with different group size
+Run ./convolution peom.ppm 100 on cuda1, with different work group size:
+
+8*8:
+**********
+0.001358 s
+578.941707 MPixels/s
+4.631534 GBit/s
+28.174545 GFlop/s
+**********
+
+
+16*16:
+**********
+0.000974 s
+807.391264 MPixels/s
+6.459130 GBit/s
+39.292180 GFlop/s
+**********
+
+32*32:
+**********
+0.000864 s
+910.512828 MPixels/s
+7.284103 GBit/s
+44.310653 GFlop/s
+**********
+
+We see that the performance get improved when the group size increases.
+
+********************************************************************************
+********************************************************************************
+* Part b.
+In the loop of opencl computing we copy the output buffer buf_congray to
+the input buffer buf_gray to get the filter applied iteratively.
+
+
+loop code:
+  for(int loop = 0; loop < num_loops; ++loop)
+  {
+    CALL_CL_SAFE(clEnqueueNDRangeKernel(queue, knl, 2, NULL,
+          global_size, local_size, 0, NULL, NULL));
+    CALL_CL_SAFE(clEnqueueCopyBuffer(queue, buf_congray, buf_gray, 0, 0, deviceDataSize, 0, NULL, NULL));
+  }
+
+The file name of several outputs are output_cl_peomN.ppm where N is the number of filter application. 
